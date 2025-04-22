@@ -1,0 +1,11 @@
+>>    The training script ties everything together: it loads the data, initializes the model and optimizer, and runs the training loop.
+	After each epoch, we optionally evaluate on a validation set to monitor the metrics. The model is saved after training for later inference.
+
+>>    Explanation: We set up DataLoaders for training and validation. Note that for validation, we use batch_size=1 to handle one pulse train 
+	at a time — this makes clustering and metric calculation straightforward for each individual sequence. In training, we shuffle the data 
+	and use pad_collate_fn to batch together pulse trains (which may have different lengths). We offset the labels by 10000 * sequence_index 
+	before computing the triplet loss to ensure labels from different pulse trains in the same batch are treated as distinct classes 
+	(preventing incorrect positive pairings across sequences). We then calculate the batch-all triplet loss and optimize the model. After
+	each epoch, we switch to evaluation mode and iterate through the validation set. For each validation pulse train, we obtain its embeddings,
+	cluster them with HDBSCAN, and compute the ARI, AMI, and V-measure against the true labels. We report the average metrics across all 
+	validation pulse trains for that epoch. Finally, we save the trained model parameters to a file.

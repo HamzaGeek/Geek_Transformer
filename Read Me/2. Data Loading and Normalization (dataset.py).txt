@@ -1,0 +1,13 @@
+	
+>>    The dataset class PDWDataset loads pulse trains (each pulse train contains pulses from multiple emitters)
+	and prepares them for training/inference. It applies per-train normalization as described above​
+	.We assume data is stored in a directory with one file per pulse train 
+	(e.g., CSV with columns for the 5 features and an emitter label). The dataset returns a tuple 
+	(features_tensor, labels_tensor) for each pulse train. A custom pad_collate_fn pads sequences 
+	in a batch to the same length and handles masking and label padding
+
+>>    Explanation: The PDWDataset can load data either from a directory of CSV files or from a provided list of sequences.
+ 	In __getitem__, we apply the specified normalization for each pulse train​. ToA is min-max scaled, 
+	frequency/PW/amplitude are standardized (with a safety check for zero variance), and AoA is divided by 360. 
+	The pad_collate_fn pads each batch to the maximum sequence length and marks padded entries with -1 label and True 
+	in the padding mask. This mask will be used to inform the transformer to ignore padded positions.

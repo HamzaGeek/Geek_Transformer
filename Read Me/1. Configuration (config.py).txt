@@ -1,0 +1,5 @@
+>> Configuration (config.py)
+
+We define all important hyperparameters and file paths in a single config module for 
+easy tweaking and reference across the codebase. This includes model dimensions, 
+training parameters, and data paths.

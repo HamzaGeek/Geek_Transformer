@@ -1,0 +1,12 @@
+>>    We use HDBSCAN for clustering the embeddings at inference time. In utils/clustering.py, we provide a helper to 
+	perform HDBSCAN clustering on a set of embeddings. In utils/metrics.py, we use scikit-learn to compute the evaluation
+	metrics: Adjusted Rand Index (ARI), Adjusted Mutual Information (AMI), and V-measure. These metrics compare the 
+	predicted cluster labels with ground-truth emitter labels to quantify clustering performance.
+
+>>    Explanation: The cluster_embeddings function uses the HDBSCAN algorithm to cluster the embeddings. HDBSCAN will assign 
+	a cluster label to each point, with -1 typically meaning noise or an outlier. We set min_cluster_size=20 as per the 
+	paper’s recommendation​ which influences the granularity of clustering. The evaluate_clustering function returns 
+	ARI, AMI, and V-measure scores for the clustering result. These metrics all range from 0 to 1, with 1 being perfect 
+	clustering matching the ground truth. They are the same metrics used in the paper to evaluate performance​
+
+.

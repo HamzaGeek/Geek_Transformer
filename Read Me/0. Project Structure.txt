@@ -1,0 +1,49 @@
+>> PDW Features:
+
+Each pulse is represented by a 5-dimensional Pulse Descriptor Word (PDW):
+1. Time of Arrival (ToA) 
+2. Center Frequency 
+3. Pulse Width (PW)
+4. Amplitude
+5. Angle of Arrival (AoA)​
+
+>>Normalization:
+
+1. ToA: linearly rescaled so that the lowest ToA in the train is 0 and the highest is 1.
+2. Frequency, Pulse Width, Amplitude: standardized per train (subtract mean and divide by std).
+3. AoA: divided by 360° to map angles to [0, 1].
+
+
+>> Model Architecture: 
+
+We use a sequence-to-sequence transformer encoder with 8 layers, 8 attention heads, feed-forward dimension 2048, 
+and model (residual) dimension 256​. Dropout of 0.05 is applied. Positional encodings are not used 
+(the pulses’ ToA implicitly provides ordering) as the authors found them unnecessary​.The transformer's outputs 
+are projected to an 8-dimensional embedding space​. Pulses from the same emitter should yield nearby 8-D embeddings,
+while pulses from different emitters should be far apart. 
+
+>> Training Configuration:
+
+We train with Adam optimizer (learning rate 1e-4), batch size 8, for 8 epochs​ The triplet loss margin is 1.9​ We use batch-all 
+triplet mining: for each batch, we compute the loss across all non-easy triplets (those that violate the margin) and average 
+over them​If a pulse train has only one emitter (no valid triplets), it contributes zero loss​
+
+>> Inference and Clustering: 
+
+At inference, we run the transformer to get embeddings for all pulses in a recorded pulse train. 
+We then cluster these embeddings using HDBSCAN (minimum cluster size = 20)​to assign each pulse an emitter group. We evaluate 
+clustering results against ground truth emitter labels using ARI, AMI, and V-measure metrics. Below is the project structure 
+and detailed implementation of each component:
+
+
+>> Project Structure
+
+1.config.py – Hyperparameters and configuration constants.
+2.data/dataset.py – Dataset class for loading pulse trains and applying normalization.
+3.models/transformer_model.py – Transformer encoder model definition for pulse embedding.
+4.losses/triplet_loss.py – Triplet loss implementation (batch-all strategy).
+5.utils/metrics.py – Functions to compute clustering evaluation metrics (AMI, ARI, V-measure).
+6.utils/clustering.py – Utility for HDBSCAN clustering on embeddings.
+7.train.py – Training script (with optional validation after each epoch).
+8.validate.py – Validation script to evaluate the model on a validation/test set and report metrics.
+9.inference.py – Inference script to cluster new pulse data using a trained model.

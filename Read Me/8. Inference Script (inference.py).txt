@@ -1,0 +1,8 @@
+>>    The inference script demonstrates how to use the trained model on new, unlabeled data (for which ground truth emitter labels are not known).
+ 	It loads a pulse train, runs the model to get embeddings, clusters them with HDBSCAN, and outputs the cluster assignments for each pulse.
+
+>>    Explanation: We load the model and create a DataLoader for the new data (each sample being one pulse train). For each pulse train, we obtain the
+	embedding matrix and apply cluster_embeddings. The resulting cluster labels (0,1,2,... for clusters, and possibly -1 for noise points) are then 
+	output. In a real setting, one might want to save these labels to a file or further post-process them. The script above simply prints the number 
+	of clusters found and sample output for pulses. The user can replace the print statements with code to integrate the results into their application
+	(for example, grouping pulses by cluster to form deinterleaved pulse trains).

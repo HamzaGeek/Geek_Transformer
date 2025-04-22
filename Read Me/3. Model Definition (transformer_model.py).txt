@@ -1,0 +1,14 @@
+>>    The model is a transformer encoder that maps a sequence of normalized PDW features to a sequence of embedding vectors. 
+	We use PyTorch's nn.TransformerEncoder for convenience. The model consists of an input linear layer 
+	(to project 5-D input features to D_MODEL dimensions), a stack of 8 transformer encoder layers, and an output linear 
+	layer to produce 8-D embeddings​.We disable positional encoding to follow the paper’s approach 
+	(the model can use ToA to infer ordering)​
+
+
+
+>>    Explanation: The model uses a vanilla dot-product self-attention transformer encoder​. We set batch_first=True so that 
+	inputs are [batch, seq, features]. The forward pass applies the input linear layer to each pulse’s feature vector, 
+	runs the sequence through the transformer (with a padding mask so that padded time steps do not contribute attention), 
+	and then applies the output linear layer to produce 8-dimensional embeddings. We commented out an optional L2 normalization 
+	on the embeddings – this can be enabled if desired to keep embeddings on the unit hypersphere (the paper did not explicitly 
+	mention using it, and they use Euclidean distance directly​).

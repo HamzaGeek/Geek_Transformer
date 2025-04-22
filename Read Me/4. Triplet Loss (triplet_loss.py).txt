@@ -1,0 +1,21 @@
+>>    We implement the batch-all triplet loss​This loss considers all possible triplets (anchor, positive, negative) 
+	in the batch and computes the margin-based loss for those that violate the triplet condition. We average the 
+	loss over all non-easy triplets (i.e., those with positive loss)​ If no triplet in the batch violates the margin 
+	(loss = 0 for all), the batch contributes zero loss (no model update)
+
+>>    Explanation: We first filter out padded entries (with label -1) so they do not contribute to the loss. We then compute
+	an N x N pairwise distance matrix for the remaining embeddings (using Euclidean distance​). We construct boolean masks for
+ 	positive pairs (same label) and negative pairs (different label). Using broadcasting, we form a 3D tensor of triplet losses
+
+ 	loss[i,j,k] = max(0, d(i,j) - d(i,k) + margin) 
+
+	for every anchor i, positive j, and negative k. We mask this tensor to only include valid triplet combinations 
+	(where i and j share a label and i and k do not).
+
+	We then average the positive losses over all such triplets​. Easy triplets (where the inequality is already satisfied)
+ 	yield zero loss and do not affect the average. If there are no valid triplets (e.g., a pulse train with only one emitter​),
+	the loss is 0. 
+
+>>    Note: This batch-all approach can be computationally heavy if a batch contains many pulses. 
+	In practice, batch size and sequence lengths are set to manageable values (the paper used batch size 8 and pulse trains 
+	of a few hundred pulses) to make this feasible. If needed, one could optimize by selecting only "hard" triplets instead.​

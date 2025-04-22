@@ -1,0 +1,7 @@
+>>    The validation script loads a saved model and evaluates it on a validation or test dataset, reporting the clustering metrics.
+	This can be used after training to get a final performance measurement on unseen data
+
+
+>>	Explanation: This script is similar to the validation portion inside train.py, but standalone. It loads the model from disk, 
+	iterates through each pulse train in the validation set, clusters the embeddings, and computes metrics. It prints metrics per
+	pulse train and overall average metrics. This is useful for a final evaluation on a test set as well.
